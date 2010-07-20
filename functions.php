@@ -48,6 +48,8 @@ function soup_setupParentThemeClass(){
 			$this->registerMenus();
 		
 			add_action('wp_head', array($this, 'favIcon'));
+			add_filter('body_class', array($this, 'bodyClass'),5, 2);
+			add_filter('post_class', array($this, 'postClass'),5, 3);
 		
 			add_action('wp_print_styles', array($this,'registerCSS'), 50);
 			add_action('wp_print_styles', array($this,'registerJS'),  50);
@@ -59,6 +61,7 @@ function soup_setupParentThemeClass(){
 			add_filter('style_loader_src', array($this, 'removeVersionQstring'));
 
 			add_filter('wp_nav_menu', array($this, 'filterMenus'));
+			add_filter('wp_title', array($this, 'filterHtmlTitle'), 10, 2);
 
 		
 		}
@@ -419,13 +422,15 @@ function soup_setupParentThemeClass(){
 			}
 		}
 
-		function bodyClass($print = true) {
+		function bodyClass($classes, $class = null) {
 			//set classes on <body> tag
 			// based on same function in Sandbox
 			global $wp_query, $current_user;
 			//much of this function is sourced from the sandbox_body_class from the sandbox theme
-
+			
 			$c = array();
+			if (isset($class))
+				$c[] = join(' ', $class);
 			$c[] = 'nojs';
 			$c[] = 'nojswin';
 			is_front_page()  ? $c[] = 'bxHome'       : null; // For the front page, if set
@@ -522,22 +527,28 @@ function soup_setupParentThemeClass(){
 
 
 			// Separates classes with a single space, collates classes for BODY
-			$c = join( ' ', apply_filters( 'body_class',  $c ) ); // Available filter: body_class
+			//$c = join( ' ', apply_filters( 'body_class',  $c ) ); // Available filter: body_class
 
 			// And tada!
-			return $print ? print($c) : $c;		
+			return $c;		
 		}
 
-		function postClass($print = true, $additionalClasses = null) {
+		function postClass($classes, $class = null, $post_ID = null) {
 			//set classes on post's <div> tag
 			// sourced from the sandbox theme
-			global $post;
+			
+			if (isset($post_ID)) {
+				$post = get_post($post_id);
+			}
+			else {
+				global $post;
+			}
 
 			// hentry for hAtom compliace, gets 'alt' for every other post DIV, describes the post type and p[n]
 			$c = array( 'hentry', "p$this->postAlt", $post->post_type, $post->post_status );
 
-			if ($additionalClasses) {
-				$c[] = $additionalClasses;
+			if (!empty($class)) {
+				$c[] = join(' ', $class);
 			}
 
 			// Post ID
@@ -571,10 +582,7 @@ function soup_setupParentThemeClass(){
 				$c[] = 'alt';
 
 			// Separates classes with a single space, collates classes for post DIV
-			$c = join( ' ', apply_filters( 'post_class', $c ) ); // Available filter: post_class
-
-			// And tada!
-			return $print ? print($c) : $c;
+			return $c;
 		}
 	
 		function favIcon(){
@@ -713,10 +721,88 @@ function soup_setupParentThemeClass(){
 			$menu = preg_replace('(\<ul(/?[^\>]+)\>)', '',$menu);
 			return $menu;
 		}
-	
+
+		function filterHtmlTitle($title, $separator){
+			//write out the html title, format similar to All In One SEO
+			// SOURCE: twentyten theme
+			if (is_feed()){
+				return $title;
+			}
+			
+			// The $paged global variable contains the page number of a listing of posts.
+			// The $page global variable contains the page number of a single post that is paged.
+			// We'll display whichever one applies, if we're not looking at the first page.
+			global $paged, $page;
+
+			if ( is_search() ) {
+				// If we're a search, let's start over:
+				$title = 'Search results for ' . get_search_query();
+				// Add a page number if we're on page 2 or more:
+				if ( $paged >= 2 )
+					$title .= " $separator Page $paged";
+				// Add the site name to the end:
+				$title .= " $separator " . get_bloginfo( 'name', 'display' );
+				// We're done. Let's send the new title back to wp_title():
+				return $title;
+			}
+			
+			if (is_404()) {
+				//rewite request as words, as w/ all in one seo
+				$request = htmlspecialchars($_SERVER['REQUEST_URI']);
+				$request = str_replace('.html', ' ', $request);
+				$request = str_replace('.htm', ' ', $request);
+				$request = str_replace('.', ' ', $request);
+				$request = str_replace('/', ' ', $request);
+				$request_a = explode(' ', $request);
+				$request_new = array();
+				foreach ($request_a as $token) {
+					$request_new[] = ucwords(trim($token));
+				}
+				$request = implode(' ', $request_new);
+				
+				$title = "Nothing found for $request $separator ";
+			}
+			
+			if ( is_date() ) {
+				if (is_day()) {
+					$title = get_the_time(get_option('date_format')) . " $separator ";
+				}
+				elseif (is_month()) {
+					$title = get_the_time('F Y') . " $separator ";
+				}
+				elseif (is_year()) {
+					$title = get_the_time('Y') . " $separator ";
+				}
+				
+			}
+
+			// Otherwise, let's start by adding the site name to the end:
+			$title .= get_bloginfo( 'name', 'display' );
+
+			// If we have a site description and we're on the home/front page, add the description:
+			$site_description = get_bloginfo( 'description', 'display' );
+			if ( $site_description && ( is_home() || is_front_page() ) ) {
+				$title .= " $separator " . $site_description;
+			}
+
+			// Add a page number if necessary:
+			if ( $paged >= 2 || $page >= 2 )
+				$title .= " $separator Page " . max( $paged, $page ) ;
+
+			// Return the new title to wp_title():
+			return $title;
+		}
+
 		//list pages
 
 		//cats and tags meow -- for cat/tag archives, list other cats/tags only
+		
+		
+		
+		/* *************************
+		**     CONTENT WRITERS    **
+		************************* */
+		
 	}
 
 
@@ -742,9 +828,9 @@ function soup_initialiseSoupObject(){
 	need to reverse the order the function.php files usually run in
 	parent's function.php needs to run before child's
 */
-add_action('init', 'soup_setupParentThemeClass', 1);
-// add_action('init', 'soup_setupChildThemeClass', 2); //reference: runs in child's function.php
-add_action('init', 'soup_initialiseSoupObject', 3);
+add_action('after_setup_theme', 'soup_setupParentThemeClass', 1);
+// add_action('after_setup_theme', 'soup_setupChildThemeClass', 2); //reference: runs in child's function.php
+add_action('after_setup_theme', 'soup_initialiseSoupObject', 3);
 
 
 ?>
