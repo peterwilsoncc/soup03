@@ -1,0 +1,132 @@
+@import url(../all/yui-reset.css);
+@import url(../all/yui-fonts.css);
+@import url(../all/yui-base.css);
+
+/*! This file has *//* NOT *//*! been minimized. */
+/*In minimized files, *//*! credits of reused code can be found by removing '-min' from the url. */
+
+/* ***************
+GENERAL STYLES
+*************** */
+
+
+/* font */
+body,
+select,
+input,
+button,
+textarea {
+	font-family:arial,helvetica,clean,sans-serif;
+}
+
+pre,
+code,
+kbd,
+samp,
+tt {
+	font-family:monospace;
+}
+
+/* line heights */
+body,pre,code,kbd,samp,tt {
+	line-height: 1.5;
+}
+
+/* content area width & font size */
+#pageWrap {
+	margin: 0 auto;
+	width: 960px;
+	font-size: 100%; /* define as % of 13px */
+}
+
+
+/* ***************
+SKIP LINK
+*************** */
+
+
+
+#skipLinks a:link, 
+#skipLinks a:visited {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -1000000em;
+/*	left: 0;*/
+	z-index: 1000; /*in case there's something in the way*/
+	width: 100%;
+	padding: 0.25em 0;
+
+	background: #555555;
+	color: #fff;
+	text-align: center;
+	
+	/*give it a subtle border & shadow*/
+	border: solid #000;
+	border-width: 1px 0;
+	     -moz-box-shadow: 0 0 8px #000;
+	  -webkit-box-shadow: 0 0 8px #000; 
+	          box-shadow: 0 0 8px #000; 
+			
+}
+
+#skipLinks a:hover,
+#skipLinks a:active,
+#skipLinks a:focus,
+#skipLinks a.focus {
+	left: 0;
+}
+
+
+/* ***************
+POP OVER LOGIN FORM
+*************** */
+
+#wp-login-form {
+	display: none;
+	position: absolute;
+	z-index: 1100; /*in case there's something in the way (incl skip link)*/
+	
+	top: 0;
+	left: 0;
+	background: #fff;
+	margin: 5px;
+	padding: 10px;
+	border: 2px solid #333;
+
+	     -moz-border-radius: 5px; 
+	  -webkit-border-radius: 5px; 
+	          border-radius: 5px; 
+}
+
+#wp-login-form-overlay {
+	display: none;
+	position: absolute;
+	z-index: 1050;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	
+	background: #000;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+	filter: alpha(opacity=80);
+	-moz-opacity: 0.8;
+	-khtml-opacity: 0.8;
+	opacity: 0.8;
+	
+}
+
+
+/*
+Credit due
+Hardboiled CSS3 Media Queries comes from Andy Clarke
+http://stuffandnonsense.co.uk/blog/about/hardboiled_css3_media_queries
+
+*/
+
+/* Large screens ----------- */
+@media only screen 
+and (min-width : 1824px) {
+/* Styles */
+}

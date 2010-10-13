@@ -1,3 +1,5 @@
+/*! This file has *//* NOT *//*! been minimized. */
+/*In minimized files, *//*! credits of reused code can be found by removing '-min' from the url. */
 /* ------------------------------------------------------------------------
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery

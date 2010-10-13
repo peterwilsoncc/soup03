@@ -1,3 +1,5 @@
+/*! This file has *//* NOT *//*! been minimized. */
+/*In minimized files, *//*! credits of reused code can be found by removing '-min' from the url. */
 /*!
  * jQuery hashchange event - v1.2 - 2/11/2010
  * http://benalman.com/projects/jquery-hashchange-plugin/

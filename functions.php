@@ -10,11 +10,12 @@ Function file load order:
 function soup_setupParentThemeClass(){
 	Class SoupThemeParent {
 
-		public $yuiBase;
 		public $parent;
 		public $child;
-	
+		public $siteNameTag;
+		public $pageNameTag;	
 	 	public $postAlt;
+		public $inlineFooterJSarray = array();
 	
 	
 	
@@ -30,12 +31,22 @@ function soup_setupParentThemeClass(){
 		function __construct(){
 			$this->defineParentURLs();
 			$this->defineChildURLs();
-			$this->defineYuiBase();
 			$this->defineMinimisedCode();
 			$this->defineParentVersions();
 			$this->defineChildVersions();
 		
-			$this->postAlt = 1;		
+			$this->postAlt = 1;
+			if (is_front_page()){
+				$this->siteNameTag = 'h1';
+				$this->pageNameTag = 'h2';
+			}
+			else {
+				$this->siteNameTag = 'p';
+				$this->pageNameTag = 'h1';
+			}
+			
+			
+					
 			$this->initTheme();
 		
 		
@@ -44,26 +55,30 @@ function soup_setupParentThemeClass(){
 		function initTheme() {
 			//add hooks, filters, etc
 		
+		
+			$this->defineThemeOptions();
 			$this->registerSidebars();
 			$this->registerMenus();
+			$this->setThumbnailSizes();
+			$this->setupThemeOptions();
 		
-			add_action('wp_head', array($this, 'favIcon'));
-			add_filter('body_class', array($this, 'bodyClass'),5, 2);
-			add_filter('post_class', array($this, 'postClass'),5, 3);
+			add_action('wp_head', array(&$this, 'favIcon'));
+			add_filter('body_class', array(&$this, 'bodyClass'),5, 2);
+			add_filter('post_class', array(&$this, 'postClass'),5, 3);
 		
-			add_action('wp_print_styles', array($this,'registerCSS'), 50);
-			add_action('wp_print_styles', array($this,'registerJS'),  50);
-			add_action('wp_print_styles', array($this,'registerAdditionalCSSandJS'),  75);
-			add_action('wp_print_styles', array($this,'enqueueCSS'), 100);		
-			add_action('wp_print_styles', array($this,'enqueueJS'),  100);
+			add_action('wp_print_styles', array(&$this,'registerCSS'), 50);
+			add_action('wp_print_styles', array(&$this,'registerJS'),  50);
+			add_action('wp_print_styles', array(&$this,'registerAdditionalCSSandJS'),  75);
+			add_action('wp_print_styles', array(&$this,'enqueueCSS'), 50);
+			add_action('wp_print_styles', array(&$this,'enqueueJS'),  100);
 		
-			add_filter('script_loader_src', array($this, 'removeVersionQstring'));
-			add_filter('style_loader_src', array($this, 'removeVersionQstring'));
+			add_filter('script_loader_src', array(&$this, 'removeVersionQstring'));
+			add_filter('style_loader_src', array(&$this, 'removeVersionQstring'));
 
-			add_filter('wp_nav_menu', array($this, 'filterMenus'));
-			add_filter('wp_title', array($this, 'filterHtmlTitle'), 10, 2);
+			add_filter('wp_nav_menu', array(&$this, 'filterHtmlTitles'));
+			add_filter('wp_title', array(&$this, 'filterHtmlTitle'), 10, 2);
 
-		
+			add_filter('wp_print_footer_scripts', array(&$this, 'inlineFooterJs'));
 		}
     
 		function defineParentURLs(){
@@ -91,8 +106,8 @@ function soup_setupParentThemeClass(){
 		}
 	
 		function defineMinimisedCode() {
-			$this->parent['mincss'] = true;
-			$this->parent['minjs'] = true;
+			$this->parent['mincss'] = false;
+			$this->parent['minjs'] = false;
 
 			$this->child['mincss'] = false;
 			$this->child['minjs'] = false;		
@@ -106,18 +121,26 @@ function soup_setupParentThemeClass(){
 		function defineChildVersions() {
 			$this->child['cssVer'] = 20100706.01;
 			$this->child['jsVer']  = 20100706.01;
+			
+			$this->child['jsDependencies'] = array (
+					'soup-base', 
+					'prettyPhoto',
+					'hashchange',
+					'form-validation',
+					'jquery'
+				);
 		}
-	
-		function defineYuiBase() {
-			if ($this->isSSL() == true) {
-				$this->yuiBase .= 'https://';
-			}
-			else {
-				$this->yuiBase .= 'http://';			
-			}
-			$this->yuiBase .= 'ajax.googleapis.com/ajax/libs/yui/2.7.0/build';
+		
+		function defineThemeOptions(){
+			$this->options['thumbnails'] = true;
+			$this->options['feedLinks'] = false;
+			$this->options['headerWidgets'] = true;
+			$this->options['footerWidgets'] = true;
+			$this->options['contentBWidgets'] = true;
+			$this->options['contentCWidgets'] = true;
+			$this->options['handheldCssMedia'] = ''; //use to customise
 		}
-	
+		
 		function isSSL() {
 			if ((function_exists('getenv') AND ((getenv('HTTPS') != '' AND getenv('HTTPS') != 'off') 
 			   OR (getenv('SERVER_PORT') == '433'))) OR (isset($_SERVER) AND ((isset($_SERVER['HTTPS']) 
@@ -130,42 +153,43 @@ function soup_setupParentThemeClass(){
 			}
 		}
 
+		function setThumbnailSizes(){
+			if ($this->options['thumbnails'] == true) {
+				if ( function_exists( 'add_theme_support' ) ) {
+					add_theme_support( 'post-thumbnails' );
+					set_post_thumbnail_size( 150, 150, true ); // 150x150 size
+				}
+			}
+			// add_image_size( '150x150', 150, 150, true); // 150x150 image size
+			// add_image_size( '270x150', 270, 150, true ); // 270x150 image size
+			// add_image_size( '310x150', 310, 150, true ); // 310x150 image size
+			// add_image_size( '310x310', 310, 310, true ); // 310x310 image size
+			// add_image_size( '590x400', 590, 400, true ); // 590x400 image size
+			// add_image_size( '590', 590, 9999 ); // 590 image size
+			// add_image_size( '950', 950, 9999 ); // 950 image size
+			
+		}
+		
+		function setupThemeOptions(){
+			if (function_exists('remove_theme_support')) {
+				if ($this->options['feedLinks'] == true) {
+					add_theme_support('automatic-feed-links');
+				}
+				elseif  ($this->options['feedLinks'] == false) {
+					remove_theme_support('automatic-feed-links');
+					remove_action('wp_head','feed_links_extra', 3);
+					remove_action('wp_head','feed_links', 2);
+				}
+			}
+		}
 
 		//register styles
 		function registerCSS(){
 			global $wp_styles;
 			if ($this->parent['mincss'] === false) {
 				$psuffix = '';
-			
-			
-				wp_register_style(
-					'yui-reset',
-					$this->yuiBase . '/reset/reset.css',
-					null,
-					'2.7.0',
-					'all'
-				);
-			
-				wp_register_style(
-					'yui-reset-fonts',
-					$this->yuiBase . '/fonts/fonts.css',
-					array('yui-reset'),
-					'2.7.0'
-				);
-			
-			
 			} else {
 				$psuffix = '-min';
-			
-				wp_register_style(
-					'yui-reset-fonts',
-					$this->yuiBase . '/reset-fonts/reset-fonts.css',
-					null,
-					'2.7.0',
-					'all'
-				);
-			
-			
 			}
 		
 			if ($this->child['mincss'] === true) {
@@ -174,15 +198,11 @@ function soup_setupParentThemeClass(){
 			else {
 				$csuffix = '';
 			}
-		
-			wp_register_style(
-				'yui-base',
-				$this->yuiBase . "/base/base$psuffix.css",
-				array('yui-reset-fonts'),
-				'2.7.0',
-				'all'
-			);
 			
+			if ($this->options['handheldCssMedia'] == '') {
+				'handheld, only screen and (min-width: 1px), only screen and (min-device-width: 1px)';
+			}
+		
 			//register pretty photo css
 			wp_register_style(
 				'prettyPhoto-css',
@@ -194,11 +214,11 @@ function soup_setupParentThemeClass(){
 	
 
 	
-			//register all-media child styles
+			//register all child styles
 			wp_register_style(
 				'soup-all',
 				$this->child['css'] . "/all/all$csuffix.css",
-				array('yui-base'),
+				null,
 				$this->child['cssVer'],
 				'all'
 			);
@@ -246,10 +266,10 @@ function soup_setupParentThemeClass(){
 				$this->child['css'] . "/mobile/mobile$csuffix.css",
 				array('soup-all'),
 				$this->child['cssVer'],
-				'handheld, only screen and (max-device-width: 480px)'
+				$this->options['handheldCssMedia']
 			);	
 	
-			//register print-media child styles
+			//register print child styles
 			wp_register_style(
 				'soup-print',
 				$this->child['css'] . "/print/print$csuffix.css",
@@ -294,11 +314,62 @@ function soup_setupParentThemeClass(){
 			);
 			$wp_styles->registered['soup-print-ie9']->extra['conditional'] = 'IE 9';
 			
+			
+			//register all-media child styles
+			wp_register_style(
+				'soup-all-media',
+				$this->child['css'] . "/all-media/all-media$csuffix.css",
+				array('soup-all'),
+				$this->child['cssVer'],
+				'print'
+			);
+
+			wp_register_style(
+				'soup-all-media-ie6',
+				$this->child['css'] . "/all-media/all-media-ie6$csuffix.css",
+				array('soup-all-media'),
+				$this->child['cssVer'],
+				'all'
+			);
+			$wp_styles->registered['soup-all-media-ie6']->extra['conditional'] = 'IE 6';
+
+			wp_register_style(
+				'soup-all-media-ie7',
+				$this->child['css'] . "/all-media/all-media-ie7$csuffix.css",
+				array('soup-all-media'),
+				$this->child['cssVer'],
+				'all'
+			);
+			$wp_styles->registered['soup-all-media-ie7']->extra['conditional'] = 'IE 7';
+
+			wp_register_style(
+				'soup-all-media-ie8',
+				$this->child['css'] . "/all-media/all-media-ie8$csuffix.css",
+				array('soup-all-media'),
+				$this->child['cssVer'],
+				'all'
+			);
+			$wp_styles->registered['soup-all-media-ie8']->extra['conditional'] = 'IE 8';
+
+			wp_register_style(
+				'soup-all-media-ie9',
+				$this->child['css'] . "/all-media/all-media-ie9$csuffix.css",
+				array('soup-all-media'),
+				$this->child['cssVer'],
+				'all'
+			);
+			$wp_styles->registered['soup-all-media-ie9']->extra['conditional'] = 'IE 9';
+			
 		}
 	
 		function enqueueCSS() {  
 			//usually overwritten by child
 			if (!is_admin()) :
+			
+				/* 
+					never enqueue seperate media styles and 
+					all-media styles at the same time.
+				*/
 				wp_enqueue_style('soup-all');
 				wp_enqueue_style('soup-all-ie6');
 				wp_enqueue_style('soup-all-ie7');
@@ -312,6 +383,18 @@ function soup_setupParentThemeClass(){
 				wp_enqueue_style('soup-print-ie7');
 				wp_enqueue_style('soup-print-ie8');
 				wp_enqueue_style('soup-print-ie9');
+				/* */
+				
+				/* 
+					never enqueue seperate media styles and 
+					all-media styles at the same time.
+				
+				wp_enqueue_style('soup-all-media');
+				wp_enqueue_style('soup-all-media-ie6');
+				wp_enqueue_style('soup-all-media-ie7');
+				wp_enqueue_style('soup-all-media-ie8');
+				wp_enqueue_style('soup-all-media-ie9');
+				/* */
 						
 			endif; //if (!is_admin()):
 		
@@ -352,7 +435,14 @@ function soup_setupParentThemeClass(){
 				$this->parent['jsVer'],
 				true
 			);
-		
+			wp_localize_script('soup-base', 'SOUPGIANT_wpURLS', array(
+				'register' => site_url('wp-login.php?action=register', 'login'),
+				'regoEnabled' => get_option('users_can_register') ? "y" : "n",
+				'lostpassword' => wp_lostpassword_url( site_url( $_SERVER['REQUEST_URI'] ) ),
+				'loginsubmit' => site_url( 'wp-login.php', 'login' ),
+				'currentURL' => site_url( $_SERVER['REQUEST_URI'] )
+			));
+				
 			/* jQuery plugins */
 			wp_register_script(
 				'form-validation',
@@ -381,7 +471,7 @@ function soup_setupParentThemeClass(){
 			wp_register_script(
 				'custom',
 				$this->child['js'] . "/custom$csuffix.js",
-				array('jquery', 'soup-base'),
+				$this->child['jsDependencies'],
 				$this->child['jsVer'],
 				true
 			);
@@ -396,17 +486,42 @@ function soup_setupParentThemeClass(){
 			// having to regregister them all
 			return true;
 		}
+		
+		function enqueueChildJs(){
+			//this function is usually overwitten in child
+			wp_enqueue_script('custom');
+		}
 
 		function enqueueJS(){
-			//this function is usually overwritten in child
-			wp_enqueue_script('custom');
-			wp_enqueue_script('prettyPhoto');
-			wp_enqueue_script('form-validation');
-			wp_enqueue_script('hashchange');
+			//this function can be overwritten in child but usually isn't
+			$this->enqueueChildJs();
+			
+			//for the wp_script_is checks below, we need to manually enque 'custom' dependancies too
+			
+			if (wp_script_is('custom') == true) {
+				foreach ($this->child['jsDependencies'] as $handle) {
+					wp_enqueue_script($handle);
+				}
+			}
+			
 		
 			if (wp_script_is('prettyPhoto') == true) {
 				wp_enqueue_style('prettyPhoto-css');
 			}
+			
+			if (wp_script_is('prettyPhoto') && wp_script_is('hashchange')) {
+				global $wp_scripts;
+				if ($this->child['minjs'] === true) {
+					$psuffix = '-min';
+				}
+				else {
+					$psuffix = '';
+				}
+				$wp_scripts->query('prettyPhoto')->src = '';
+				$wp_scripts->query('hashchange')->src = $this->parent['js'] . "/jqplugins/prettyphoto-hashchange$psuffix.js";
+				$wp_scripts->query('hashchange')->ver = $wp_scripts->query('prettyPhoto')->ver . ',' . $wp_scripts->query('hashchange')->ver;
+			}
+			
 		
 		}
 
@@ -431,8 +546,8 @@ function soup_setupParentThemeClass(){
 			$c = array();
 			if (isset($class))
 				$c[] = join(' ', $class);
-			$c[] = 'nojs';
-			$c[] = 'nojswin';
+			//$c[] = 'nojs';
+			//$c[] = 'nojswin';
 			is_front_page()  ? $c[] = 'bxHome'       : null; // For the front page, if set
 			is_home()        ? $c[] = 'bxBlog bxList bxAllBlog'       : null; // For the blog posts page, if set
 			is_archive()     ? $c[] = 'bxArch bxList bxAllBlog'    : null;
@@ -530,7 +645,7 @@ function soup_setupParentThemeClass(){
 			//$c = join( ' ', apply_filters( 'body_class',  $c ) ); // Available filter: body_class
 
 			// And tada!
-			return $c;		
+			return $c;	
 		}
 
 		function postClass($classes, $class = null, $post_ID = null) {
@@ -546,6 +661,10 @@ function soup_setupParentThemeClass(){
 
 			// hentry for hAtom compliace, gets 'alt' for every other post DIV, describes the post type and p[n]
 			$c = array( 'hentry', "p$this->postAlt", $post->post_type, $post->post_status );
+
+			if ( is_sticky($post->ID) && is_home() && !is_paged() )
+				$c[] = 'sticky';
+
 
 			if (!empty($class)) {
 				$c[] = join(' ', $class);
@@ -663,41 +782,49 @@ function soup_setupParentThemeClass(){
 		function registerSidebars() {
 			if ( function_exists('register_sidebar') ) {
 			
-				register_sidebar(array(
-					'name' => 'Sidebar A',
-					'id' => 'sidebar-a',
-					'before_widget' => '<div id="%1$s" class="widget %2$s">', 
-					'after_widget' => '</div>', 
-					'before_title' => '<h5 class="widget-title">', 
-					'after_title' => '</h5>', 
-				));
+				if ($this->options['contentBWidgets'] == true) {
+					register_sidebar(array(
+						'name' => 'Sidebar A',
+						'id' => 'sidebar-a',
+						'before_widget' => '<div id="%1$s" class="widget %2$s">', 
+						'after_widget' => '</div>', 
+						'before_title' => '<h5 class="widget-title">', 
+						'after_title' => '</h5>', 
+					));
+				}
 			
-				register_sidebar(array(
-					'name' => 'Sidebar B',
-					'id' => 'sidebar-b',
-					'before_widget' => '<div id="%1$s" class="widget %2$s">', 
-					'after_widget' => '</div>', 
-					'before_title' => '<h5 class="widget-title">', 
-					'after_title' => '</h5>', 
-				));
+				if ($this->options['contentCWidgets'] == true) {
+					register_sidebar(array(
+						'name' => 'Sidebar B',
+						'id' => 'sidebar-b',
+						'before_widget' => '<div id="%1$s" class="widget %2$s">', 
+						'after_widget' => '</div>', 
+						'before_title' => '<h5 class="widget-title">', 
+						'after_title' => '</h5>', 
+					));
+				}
 
-				register_sidebar(array(
-					'name' => 'Header',
-					'id' => 'header',
-					'before_widget' => '<div id="%1$s" class="head-widget widget %2$s">', 
-					'after_widget' => '</div>', 
-					'before_title' => '<h5 class="widget-title">', 
-					'after_title' => '</h5>', 
-				));
+				if ($this->options['headerWidgets'] == true) {
+					register_sidebar(array(
+						'name' => 'Header',
+						'id' => 'header',
+						'before_widget' => '<div id="%1$s" class="head-widget widget %2$s">', 
+						'after_widget' => '</div>', 
+						'before_title' => '<h5 class="widget-title">', 
+						'after_title' => '</h5>', 
+					));
+				}
 
-				register_sidebar(array(
-					'name' => 'Footer',
-					'id' => 'footer',
-					'before_widget' => '<div id="%1$s" class="foot-widget widget %2$s">', 
-					'after_widget' => '</div>', 
-					'before_title' => '<h5 class="widget-title">', 
-					'after_title' => '</h5>', 
-				));
+				if ($this->options['footerWidgets'] == true) {
+					register_sidebar(array(
+						'name' => 'Footer',
+						'id' => 'footer',
+						'before_widget' => '<div id="%1$s" class="foot-widget widget %2$s">', 
+						'after_widget' => '</div>', 
+						'before_title' => '<h5 class="widget-title">', 
+						'after_title' => '</h5>', 
+					));
+				}
 
 			}
 			return;
@@ -793,16 +920,266 @@ function soup_setupParentThemeClass(){
 			return $title;
 		}
 
-		//list pages
+		function listPages($args = ''){
+			/* similar to wp_list_pages with a number of changes
+				- 'on active' classes added to current tree, eg class="on active current_page_ancestor etc"
+				- able to show home page
+			*/
+			$defaults = array(
+				'date_format' => get_option('date_format'),
+				'image_replacement' => 0,
+				'echo' => 1,
+				'depth' => 2, 
+				'show_date' => '',
+				'child_of' => 0, 
+				'exclude' => '',
+				'title_li' => '', 
+				'show_home' => 1,
+				'authors' => '', 
+				'sort_column' => 'menu_order, post_title',
+				'link_before' => '', 
+				'link_after' => ''
+			);
+
+			$r = wp_parse_args($args, $defaults);
+
+			$menu = '';
+
+			// Show Home in the menu
+			if ( isset($r['show_home']) && ! empty($r['show_home']) ) {
+				if ( true === $r['show_home'] || '1' === $r['show_home'] || 1 === $r['show_home'] )
+					$text = 'Home';
+				else
+					$text = $r['show_home'];
+				$class = 'class="page_item page-item-home"';
+				if ( is_front_page() && !is_paged() )
+					$class = 'class="page_item page-item-home current_page_item"';
+				$menu .= '<li ' . $class . '><a href="' . get_option('home') . '">' . $r['link_before'] . $text . $r['link_after'] . '</a></li>';
+				// If the front page is a page, add it to the exclude list
+				if (get_option('show_on_front') == 'page') {
+					if ( !empty( $list_args['exclude'] ) ) {
+						$list_args['exclude'] .= ',';
+					} else {
+						$list_args['exclude'] = '';
+					}
+					$list_args['exclude'] .= get_option('page_on_front');
+				}
+			}
+
+
+
+			$list_args = $r;
+			$list_args['echo'] = 0;
+			$menu .= wp_list_pages($list_args);
+			$menu = str_replace('current_page_item', 'on active current_page_item', $menu);
+			$menu = str_replace('current_page_ancestor', 'on active current_page_ancestor', $menu);
+
+			if ( $r['echo'] )
+				echo $menu;
+			else
+				return $menu;	
+		}
 
 		//cats and tags meow -- for cat/tag archives, list other cats/tags only
 		
+		function jsString($string){
+			//takes a string and converts it for output to Javascript (escaped chars, etc)
+			$string = preg_replace('!\s+!', ' ', $string);
+			$string = trim($string);
+		    return strtr($string, array('\\'=>'\\\\',"'"=>"\\'",'"'=>'\\"',"\r"=>'\\r',"\n"=>'\\n','</'=>'<\/', ';'=>'\\;'));
+		}
+		
+		function inlineFooterJs(){
+			$showJs = false;
+			$outputJs = '<script>var SOUPGIANT=SOUPGIANT||{};';
+			foreach ($this->inlineFooterJSarray as $js) {
+				$showJs = true;
+				$outputJs .= $js;
+			}
+			$outputJs .= '</script>';
+			if ($showJs) {
+				echo $outputJs;
+			}
+		}
 		
 		
 		/* *************************
 		**     CONTENT WRITERS    **
 		************************* */
 		
+		
+		function writePostHeader($post, $hx = 'h3') {
+			global $authordata;
+			?>
+			<header>
+				<<?php echo $hx;?> class="entry-title"><a href="<?php the_permalink();?>"><?php the_title()?></a></<?php echo $hx;?>>
+				<p>Posted on <time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
+			</header>			
+			<?php
+		}
+		
+		function writePostContent($post) {
+			?>
+				<section class="entry-content">
+					<?php the_content('Continue reading "'.the_title('', '', false).'" &raquo;'); ?>
+				</section>			
+			<?php
+		}
+		
+		function writePostFooter($post) {
+			?>
+				<footer>
+					<p>Posted in <span class="cat-links"><?php the_category(', '); ?></span> &bull; 
+					<?php edit_post_link('Edit', '', ' &bull; '); ?> 
+					<?php the_tags('<span class="tag-links">Tagged: ', ', ', '</span> &bull; '); ?>
+					<span class="comments-link">
+						<?php
+							if (('open' == $post->comment_status) || (get_comments_number() > 0)) {
+								echo '<a href="';
+								comments_link();
+								echo '">';
+								comments_number('Leave a comment','One comment','% comments');
+								echo '</a>';
+							}
+							else {
+								echo 'Comments are closed';
+							}
+						?>
+					</span>
+					</p>
+				</footer>
+			<?php
+		}
+
+		
+		
+		function writeArchivePost($post, $hx = 'h2') {
+			?>
+			<article id="post-<?php the_ID() ?>" <?php post_class(); ?>>
+				<?php
+				$this->writePostHeader($post, $hx);
+				$this->writePostContent($post);
+				$this->writePostFooter($post);
+				?>
+			</article>
+			<!-- //#post-<?php the_ID() ?> -->
+			<?php			
+		}		
+		
+		function writeIndexPost($post, $hx = 'h2') {
+			$this->writeArchivePost($post, $hx);
+		}
+		
+		function writeSearchPost($post, $hx = 'h2') {
+			$this->writeArchivePost($post, $hx);			
+		}
+		
+		function writeSinglePost($post, $hx = 'h1') {
+			// This doesn't write out the header, it's done in single.php
+			
+			// $this->writePostHeader($post, $hx);
+			$this->writePostContent($post);
+			wp_link_pages('before=<div id="post-nav" class="page-nav post-nav nav">Pages:&after=</div>'); 
+			$this->writePostFooter($post);
+		}
+		
+		function writePagePost($post, $hx = 'h1') {
+			// This doesn't write out the header, it's done in single.php
+			
+			// $this->writePostHeader($post, $hx);
+			$this->writePostContent($post);
+			wp_link_pages('before=<div id="post-nav" class="page-nav post-nav nav">Pages:&after=</div>'); 
+		}
+
+		function loginForm() {
+			// Default login form, to override just redefine the variable in child functions
+			// Any changes should be reflected in the custom.js output of the login form
+			
+			
+			$loginForm = wp_login_form(array(
+				'echo' => false,
+				'value_remember' => 1,
+				'label_remember' => 'Remember Me'
+				));
+				
+			$loginForm = '<div id="wp-login-form">' . $loginForm;
+			$loginForm .= '<div id="wp-login-form-utils"><a href="' . wp_lostpassword_url( get_permalink() ) .
+					'" title="Lost your password?" id="wp-login-form-lost">Lost your password?</a>';
+					
+			$loginForm .= wp_register( ' ', ' ', false);
+			$loginForm .= '</div>';
+					
+			
+					
+			//$this->inlineFooterJSarray[] = 'SOUPGIANT.wp_login_form = "' . $this->jsString($loginForm) . '";';
+			
+			
+		}
+		
+		function commentTemplate($comment, $args, $depth) {
+			$GLOBALS['comment'] = $comment;
+			$GLOBALS['comment_depth'] = $depth;
+			?>
+			<li id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
+				<div class="comment-head">
+					<p class="comment-author vcard">
+						<?php 
+							if ($args['avatar_size'] != 0) {
+								echo get_avatar($comment, $args['avatar_size']); 
+							}
+						?>
+						<cite class="fn"><?php comment_author_link(); ?></cite> <span class="says">says:</span>
+					</p>
+					<p class="comment-meta">
+						<a href="#comment-<?php comment_ID(); ?>"><?php comment_date(); ?> at <?php comment_time(); ?></a>
+
+						<?php edit_comment_link('(Edit)', ' <span class="comment-edit-link">', '</span>' ); ?>
+					</p>
+				</div>
+
+				<div class="comment-body" id="c-body-<?php comment_ID(); ?>">
+					<?php 
+
+					if ($comment->comment_approved == '0') {
+						echo '<p class="comment-moderation">Your comment is awaiting moderation.</p>';
+					}
+					comment_text(); 
+					?>
+
+				<?php // echo the comment reply link with help from Justin Tadlock http://justintadlock.com/ and Will Norris http://willnorris.com/
+					if($args['type'] == 'all' || get_comment_type() == 'comment') :
+						comment_reply_link(array_merge($args, array(
+							'reply_text' => 'Reply to this comment', 
+							'login_text' => 'Log in to reply.',
+							'depth' => $depth,
+							'before' => '<div class="reply">', 
+							'after' => '</div>',
+							'add_below' => 'c-body'
+						)));
+					endif;
+				?>
+				</div>
+				<?php
+		}
+		
+		function pingTemplate($comment, $args, $depth) {
+			$GLOBALS['comment'] = $comment;
+			$GLOBALS['comment_depth'] = $depth;
+			?>
+			<li id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
+				<div class="comment-head">
+					<p class="comment-author">
+						<?php comment_author_link(); ?>
+					</p>
+					<p class="comment-meta">
+						<a href="#comment-<?php comment_ID(); ?>"><?php comment_date(); ?> at <?php comment_time(); ?></a>
+
+						<?php edit_comment_link('(Edit)', ' <span class="comment-edit-link">', '</span>' ); ?>
+					</p>
+				</div>
+
+				<?php
+		}
 	}
 
 

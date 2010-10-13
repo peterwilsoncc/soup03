@@ -1,0 +1,14 @@
+/*! This file has *//* NOT *//*! been minimized. */
+/*In minimized files, *//*! credits of reused code can be found by removing '-min' from the url. */
+
+/* hide common elements */
+nav,
+.sidebar {
+	display: none;
+}
+
+/* print URLS - credit due: Eric Meyer, http://www.alistapart.com/articles/goingtoprint/ */
+#contentA a[href^="http"]:after {
+	content: " (" attr(href) ") ";
+}
+
