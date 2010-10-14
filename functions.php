@@ -61,6 +61,7 @@ function soup_setupParentThemeClass(){
 			$this->registerMenus();
 			$this->setThumbnailSizes();
 			$this->setupThemeOptions();
+			$this->initChildTheme();
 		
 			add_action('wp_head', array(&$this, 'favIcon'));
 			add_filter('body_class', array(&$this, 'bodyClass'),5, 2);
@@ -79,6 +80,10 @@ function soup_setupParentThemeClass(){
 			add_filter('wp_title', array(&$this, 'filterHtmlTitle'), 10, 2);
 
 			add_filter('wp_print_footer_scripts', array(&$this, 'inlineFooterJs'));
+		}
+
+		function initChildTheme(){
+			//placeholder function for additional initing by the child theme
 		}
     
 		function defineParentURLs(){
