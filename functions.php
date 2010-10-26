@@ -549,7 +549,7 @@ function soup_setupParentThemeClass(){
 			//much of this function is sourced from the sandbox_body_class from the sandbox theme
 			
 			$c = array();
-			if (isset($class))
+			if (isset($class) && is_array($class))
 				$c[] = join(' ', $class);
 			//$c[] = 'nojs';
 			//$c[] = 'nojswin';
