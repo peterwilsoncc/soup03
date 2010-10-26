@@ -787,6 +787,17 @@ function soup_setupParentThemeClass(){
 		function registerSidebars() {
 			if ( function_exists('register_sidebar') ) {
 			
+				if ($this->options['headerWidgets'] == true) {
+					register_sidebar(array(
+						'name' => 'Header',
+						'id' => 'header',
+						'before_widget' => '<div id="%1$s" class="head-widget widget %2$s">', 
+						'after_widget' => '</div>', 
+						'before_title' => '<h5 class="widget-title">', 
+						'after_title' => '</h5>', 
+					));
+				}
+
 				if ($this->options['contentBWidgets'] == true) {
 					register_sidebar(array(
 						'name' => 'Sidebar A',
@@ -803,17 +814,6 @@ function soup_setupParentThemeClass(){
 						'name' => 'Sidebar B',
 						'id' => 'sidebar-b',
 						'before_widget' => '<div id="%1$s" class="widget %2$s">', 
-						'after_widget' => '</div>', 
-						'before_title' => '<h5 class="widget-title">', 
-						'after_title' => '</h5>', 
-					));
-				}
-
-				if ($this->options['headerWidgets'] == true) {
-					register_sidebar(array(
-						'name' => 'Header',
-						'id' => 'header',
-						'before_widget' => '<div id="%1$s" class="head-widget widget %2$s">', 
 						'after_widget' => '</div>', 
 						'before_title' => '<h5 class="widget-title">', 
 						'after_title' => '</h5>', 
@@ -1007,7 +1007,16 @@ function soup_setupParentThemeClass(){
 			}
 		}
 		
-		
+		function get_category_link($id){
+			if (is_numeric($id)) {
+				$cat_id = $id;
+			}
+			else {
+				$cat_id = get_cat_ID( $id );
+			}
+			
+			return get_category_link( $cat_id );
+		}
 		/* *************************
 		**     CONTENT WRITERS    **
 		************************* */
