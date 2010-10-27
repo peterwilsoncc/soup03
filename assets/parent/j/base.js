@@ -513,7 +513,7 @@ SOUPGIANT.base = function() {
 		$form.each(function(){
 			// find each label
 			$('label', this).each(function(){
-				if (typeof this.htmlFor == 'string'){
+				if ((typeof this.htmlFor == 'string') && (this.htmlFor != '')){
 					var $label = $(this),
 						$field = $('#' + this.htmlFor);
 					function fieldFocus($label) {
