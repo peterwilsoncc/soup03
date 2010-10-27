@@ -517,11 +517,11 @@ SOUPGIANT.base = function() {
 					var $label = $(this),
 						$field = $('#' + this.htmlFor);
 					function fieldFocus($label) {
-						$label.addClass('active');
+						$label.addClass('active').removeClass('inactive');
 					}
 					function fieldBlur($field,$label) {
 						if ($field[0].value == '') {
-							$label.removeClass('active');
+							$label.removeClass('active').addClass('inactive');
 						}
 					}
 					
