@@ -505,6 +505,40 @@ SOUPGIANT.base = function() {
 		});
 	}
 
+	function compactForm($form){
+		if ($form == NUL) {
+			return;
+		}
+		$form = make$($form);
+		$form.each(function(){
+			// find each label
+			$('label', this).each(function(){
+				if (typeof this.htmlFor == 'string'){
+					var $label = $(this),
+						$field = $('#' + this.htmlFor);
+					function fieldFocus($label) {
+						$label.addClass('active');
+					}
+					function fieldBlur($field,$label) {
+						if ($field[0].value == '') {
+							$label.removeClass('active');
+						}
+					}
+					
+					$field.focus(function(){fieldFocus($label);});
+					$field.blur(function(){fieldBlur($field,$label);});
+					
+					//once page has loaded, wait 50ms and run blur event
+					$(WIN).ready(function() {
+						setTimeout(function() {
+							fieldBlur($field, $label);
+						},50);
+					});
+					
+				}
+			});
+		});
+	}
 		
 	return {
 		setCookie: setCookie,
@@ -515,7 +549,8 @@ SOUPGIANT.base = function() {
 		skipLinks: skipLinks,
 		make$: make$,
 		popup: popup,
-		displayLoginForm:displayLoginForm
+		displayLoginForm:displayLoginForm,
+		compactForm:compactForm
 		
 	};
 }();
