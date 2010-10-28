@@ -76,7 +76,7 @@ function soup_setupParentThemeClass(){
 			add_filter('script_loader_src', array(&$this, 'removeVersionQstring'));
 			add_filter('style_loader_src', array(&$this, 'removeVersionQstring'));
 
-			add_filter('wp_nav_menu', array(&$this, 'filterHtmlTitles'));
+			add_filter('wp_nav_menu', array(&$this, 'filterMenus'));
 			add_filter('wp_title', array(&$this, 'filterHtmlTitle'), 10, 2);
 
 			add_filter('wp_print_footer_scripts', array(&$this, 'inlineFooterJs'));
