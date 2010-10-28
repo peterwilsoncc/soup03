@@ -32,20 +32,11 @@ SOUPGIANT.base = function() {
 		$html.removeClass('nojswin').addClass('jswin');
 	});
 	
-	function make$(obj){
-		if (obj instanceof $) {
-			return obj;
-		}
-		else {
-			return $(obj);
-		}
-	}
-	
 	function skipLinks($skip, focusClass){
 		if ($skip == NUL) {
 			$skip = '#skipLinks a';
 		}
-		$skip = make$($skip);
+		$skip = $($skip);
 		if (focusClass == NUL) {
 			focusClass = 'focus';
 		}
@@ -66,7 +57,7 @@ SOUPGIANT.base = function() {
 		if ($nav == NUL) {
 			$nav = $('nav');
 		}
-		$nav = make$($nav);
+		$nav = $($nav);
 		if (hoverClass == NUL) {
 			hoverClass = 'hover';
 		}
@@ -138,7 +129,7 @@ SOUPGIANT.base = function() {
 			//function called incorrectly, exit
 			return NUL;
 		}
-		$columns = make$($columns);
+		$columns = $($columns);
 		if (className == NUL) {
 			className = 'equalHeight';
 		}
@@ -457,8 +448,8 @@ SOUPGIANT.base = function() {
 	}
 	
 	function positionLoginForm($form,$overlay){
-		var $form = make$($form),
-			$overlay = make$($overlay),
+		var $form = $($form),
+			$overlay = $($overlay),
 			formWidth = $form.outerWidth(),
 			formHeight = $form.outerHeight(),
 			formPositionTop = $WIN.scrollTop() + (($WIN.height() - formHeight)/2),
@@ -509,11 +500,11 @@ SOUPGIANT.base = function() {
 		if ($form == NUL) {
 			return;
 		}
-		$form = make$($form);
+		$form = $($form);
 		$form.each(function(){
 			// find each label
 			$('label', this).each(function(){
-				if ((typeof this.htmlFor == 'string') && (this.htmlFor != '')){
+				if ((typeof this.htmlFor == 'string') && (trim(this.htmlFor) != '')){
 					var $label = $(this),
 						$field = $('#' + this.htmlFor);
 					function fieldFocus($label) {
@@ -539,7 +530,28 @@ SOUPGIANT.base = function() {
 			});
 		});
 	}
-		
+
+
+	/**
+	*
+	*  Javascript trim, ltrim, rtrim
+	*  http://www.webtoolkit.info/
+	*
+	**/
+
+	function trim(str, chars) {
+		return ltrim(rtrim(str, chars), chars);
+	}
+
+	function ltrim(str, chars) {
+		chars = chars || "\\s";
+		return str.replace(new RegExp("^[" + chars + "]+", "g"), "");
+	}
+
+	function rtrim(str, chars) {
+		chars = chars || "\\s";
+		return str.replace(new RegExp("[" + chars + "]+$", "g"), "");
+	}		
 	return {
 		setCookie: setCookie,
 		getCookie: getCookie,
@@ -547,7 +559,6 @@ SOUPGIANT.base = function() {
 		createStyleRule: createStyleRule,
 		nav: nav,
 		skipLinks: skipLinks,
-		make$: make$,
 		popup: popup,
 		displayLoginForm:displayLoginForm,
 		compactForm:compactForm
