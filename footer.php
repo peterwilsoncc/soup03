@@ -8,7 +8,7 @@ global $soup;
 			if (function_exists('wp_nav_menu')) {
 				wp_nav_menu(array(
 						'menu' => 'footer',
-						'container' => 'nav',
+						'container' => 'ul',
 						'container_id' => 'footNavWrap',
 						'menu_class' => '',
 						'menu_id' => 'footNav',

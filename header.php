@@ -41,7 +41,7 @@
 				if (function_exists('wp_nav_menu')) {
 					wp_nav_menu(array(
 							'menu' => 'header',
-							'container' => 'nav',
+							'container' => 'ul',
 							'container_id' => 'navWrap',
 							'menu_class' => '',
 							'menu_id' => 'nav',
