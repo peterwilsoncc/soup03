@@ -561,7 +561,9 @@ SOUPGIANT.base = function() {
 		skipLinks: skipLinks,
 		popup: popup,
 		displayLoginForm:displayLoginForm,
-		compactForm:compactForm
+		compactForm:compactForm,
+		createLoginForm:createLoginForm,
+		closeLoginForm:closeLoginForm
 		
 	};
 }();
