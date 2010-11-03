@@ -848,7 +848,7 @@ function soup_setupParentThemeClass(){
 		//filter the menu classes, get rid of surrounding ul
 		function filterMenus($menu) {
 			$menu = str_replace('current_page_item', 'on active current_page_item', $menu);
-			$menu = str_replace('current_page_ancestor', 'on active current_page_ancestor', $menu);
+			$menu = str_replace('current-page-ancestor', 'on active current-page-ancestor', $menu);
 			$menu = str_replace('</ul>', '', $menu);
 			$menu = preg_replace('(\<ul(/?[^\>]+)\>)', '',$menu);
 			return $menu;
