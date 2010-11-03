@@ -551,8 +551,8 @@ function soup_setupParentThemeClass(){
 			$c = array();
 			if (isset($class) && is_array($class))
 				$c[] = join(' ', $class);
-			//$c[] = 'nojs';
-			//$c[] = 'nojswin';
+			$c[] = 'nojs';
+			$c[] = 'nojswin';
 			is_front_page()  ? $c[] = 'bxHome'       : null; // For the front page, if set
 			is_home()        ? $c[] = 'bxBlog bxList bxAllBlog'       : null; // For the blog posts page, if set
 			is_archive()     ? $c[] = 'bxArch bxList bxAllBlog'    : null;
