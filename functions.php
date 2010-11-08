@@ -36,14 +36,6 @@ function soup_setupParentThemeClass(){
 			$this->defineChildVersions();
 		
 			$this->postAlt = 1;
-			if (is_front_page()){
-				$this->siteNameTag = 'h1';
-				$this->pageNameTag = 'h2';
-			}
-			else {
-				$this->siteNameTag = 'p';
-				$this->pageNameTag = 'h1';
-			}
 			
 			
 					
@@ -62,7 +54,9 @@ function soup_setupParentThemeClass(){
 			$this->setThumbnailSizes();
 			$this->setupThemeOptions();
 			$this->initChildTheme();
+			
 		
+			add_action('wp_head', array(&$this, 'setHeaderTag'));
 			add_action('wp_head', array(&$this, 'favIcon'));
 			add_filter('body_class', array(&$this, 'bodyClass'),5, 2);
 			add_filter('post_class', array(&$this, 'postClass'),5, 3);
@@ -84,6 +78,17 @@ function soup_setupParentThemeClass(){
 
 		function initChildTheme(){
 			//placeholder function for additional initing by the child theme
+		}
+
+		function setHeaderTag() {
+			if (is_front_page()){
+				$this->siteNameTag = 'h1';
+				$this->pageNameTag = 'h2';
+			}
+			else {
+				$this->siteNameTag = 'p';
+				$this->pageNameTag = 'h1';
+			}
 		}
     
 		function defineParentURLs(){
@@ -1036,6 +1041,14 @@ function soup_setupParentThemeClass(){
 			?>
 				<section class="entry-content">
 					<?php the_content('Continue reading "'.the_title('', '', false).'" &raquo;'); ?>
+				</section>			
+			<?php
+		}
+		
+		function writePostExcerpt($post) {
+			?>
+				<section class="entry-summary">
+					<?php the_excerpt(); ?>
 				</section>			
 			<?php
 		}
