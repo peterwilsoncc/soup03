@@ -13,6 +13,11 @@
 		wp_head();
 	?>
 	
+	
+	<!--[if lt IE 9]>
+		<script type="text/javascript" src="<?php echo $soup->parent['js']; ?>/selectivizr-min.js"></script>
+	<![endif]-->
+	
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 </head>
 <body>
