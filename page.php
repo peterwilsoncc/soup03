@@ -8,7 +8,7 @@ the_post();
 	<article id="contentHeadA" <?php post_class(); ?>>
 		<header id="contentHead">
 			<<?php echo $soup->pageNameTag; ?> id="pageName" class="entry-title">
-				<a href="<?php the_permalink();?>"><?php the_title()?></a>
+				<?php the_title()?>
 			</<?php echo $soup->pageNameTag; ?>>
 		</header>			
 		
