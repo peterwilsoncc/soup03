@@ -487,8 +487,6 @@ function soup_setupParentThemeClass(){
 			);
 		
 		
-			$this->commentReply();
-		
 		}
 
 		function registerAdditionalCSSandJS() {
@@ -505,6 +503,9 @@ function soup_setupParentThemeClass(){
 		function enqueueJS(){
 			//this function can be overwritten in child but usually isn't
 			$this->enqueueChildJs();
+			
+			//threaded comments
+			
 			
 			//for the wp_script_is checks below, we need to manually enque 'custom' dependancies too
 			
@@ -531,6 +532,7 @@ function soup_setupParentThemeClass(){
 				$wp_scripts->query('hashchange')->src = $this->parent['js'] . "/jqplugins/prettyphoto-hashchange$psuffix.js";
 				$wp_scripts->query('hashchange')->ver = $wp_scripts->query('prettyPhoto')->ver . ',' . $wp_scripts->query('hashchange')->ver;
 			}
+			$this->commentReply();
 			
 		
 		}
