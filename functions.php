@@ -1110,6 +1110,13 @@ function soup_setupParentThemeClass(){
 			$this->writePostContent($post);
 			wp_link_pages('before=<div id="post-nav" class="page-nav post-nav nav">Pages:&after=</div>'); 
 			$this->writePostFooter($post);
+			?>
+			<div id="page-nav" class="page-nav nav">
+				<div class="page-nav-older"><?php previous_post_link('<span class="direction">Previous post: </span>%link') ?></div>
+				<div class="page-nav-newer"><?php next_post_link('<span class="direction">Next post: </span>%link') ?></div>
+			</div>
+			<!-- //#page-nav -->
+			<?php
 		}
 		
 		function writePagePost($post, $hx = 'h1') {

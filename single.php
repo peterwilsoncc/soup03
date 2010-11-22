@@ -18,11 +18,6 @@ the_post();
 			$soup->writeSinglePost($post);
 			?>
 
-			<div id="page-nav" class="page-nav nav">
-				<div class="page-nav-older"><?php previous_post_link('<span class="direction">Previous post: </span>%link') ?></div>
-				<div class="page-nav-newer"><?php next_post_link('<span class="direction">Next post: </span>%link') ?></div>
-			</div>
-			<!-- //#page-nav -->
 			
 			<?php comments_template(); ?>
 			
