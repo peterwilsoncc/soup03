@@ -1034,7 +1034,7 @@ function soup_setupParentThemeClass(){
 			?>
 			<header>
 				<<?php echo $hx;?> class="entry-title"><a href="<?php the_permalink();?>"><?php the_title()?></a></<?php echo $hx;?>>
-				<p>Posted on <time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
+				<p class="entry-meta">Posted on <time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
 			</header>			
 			<?php
 		}
@@ -1058,7 +1058,7 @@ function soup_setupParentThemeClass(){
 		function writePostFooter($post) {
 			?>
 				<footer>
-					<p>Posted in <span class="cat-links"><?php the_category(', '); ?></span> &bull; 
+					<p class="entry-meta">Posted in <span class="cat-links"><?php the_category(', '); ?></span> &bull; 
 					<?php edit_post_link('Edit', '', ' &bull; '); ?> 
 					<?php the_tags('<span class="tag-links">Tagged: ', ', ', '</span> &bull; '); ?>
 					<span class="comments-link">
