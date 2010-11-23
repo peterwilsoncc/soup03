@@ -88,7 +88,7 @@ if ( 'comments.php' == basename($_SERVER['SCRIPT_FILENAME']) )
 							( $req ? ' required' : '' ) . ' /></p>',
 				'url'    => '<p class="comment-form-url"><label for="url">' . __( 'Website' ) . '</label>' .
 				            '<input id="url" name="url" type="url" value="' . 
-							esc_attr( $commenter['comment_author_url'] ) . '" size="30" /></p>'
+							esc_attr( ( $commenter['comment_author_url'] == '') ? 'http://' : $commenter['comment_author_url'] ) . '" size="30" /></p>'
 				)),
 				'comment_notes_after'  => '<p class="form-allowed-tags">' . 
 						sprintf( __( 'You may use these <abbr>HTML</abbr> tags and attributes: %s' ), ' <code>' .
