@@ -1112,8 +1112,8 @@ function soup_setupParentThemeClass(){
 			$this->writePostFooter($post);
 			?>
 			<div id="page-nav" class="page-nav nav">
-				<div class="page-nav-older"><?php previous_post_link('<span class="direction">Previous post: </span>%link') ?></div>
-				<div class="page-nav-newer"><?php next_post_link('<span class="direction">Next post: </span>%link') ?></div>
+				<div class="page-nav-older"><?php previous_post_link('%link','<span class="direction">Previous post </span> <span class="title">%title</span>') ?></div>
+				<div class="page-nav-newer"><?php next_post_link('%link', '<span class="direction">Next post </span> <span class="title">%title</span>') ?></div>
 			</div>
 			<!-- //#page-nav -->
 			<?php
