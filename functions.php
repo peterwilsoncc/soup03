@@ -856,6 +856,7 @@ function soup_setupParentThemeClass(){
 		function filterMenus($menu) {
 			$menu = str_replace('current_page_item', 'on active current_page_item', $menu);
 			$menu = str_replace('current-page-ancestor', 'on active current-page-ancestor', $menu);
+			$menu = str_replace('current_page_parent', 'on active current_page_parent', $menu);
 			$menu = str_replace('</ul>', '', $menu);
 			$menu = preg_replace('(\<ul(/?[^\>]+)\>)', '',$menu);
 			return $menu;
