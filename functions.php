@@ -415,19 +415,19 @@ function soup_setupParentThemeClass(){
 			if ($this->parent['minjs'] === false) {
 				$psuffix = '';
 				if ($this->isSSL() == true) {
-					$validatorURL = 'https://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.js';
+					$validatorURL = 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.7/jquery.validate.js';
 				}
 				else {
-					$validatorURL = 'http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.js';			
+					$validatorURL = 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.7/jquery.validate.js';			
 				}
 			}
 			else {
 				$psuffix = '-min';
 				if ($this->isSSL() == true) {
-					$validatorURL = 'https://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js';
+					$validatorURL = 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.7/jquery.validate.min.js';
 				}
 				else {
-					$validatorURL = 'http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js';			
+					$validatorURL = 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.7/jquery.validate.min.js';			
 				}
 			}				
 
@@ -538,7 +538,7 @@ function soup_setupParentThemeClass(){
 		}
 
 		function removeVersionQstring($src){
-			if ( preg_match( '/ajax\.googleapis\.com\/|ajax\.microsoft\.com\//', $src ) )
+			if ( preg_match( '/ajax\.googleapis\.com\/|ajax\.aspnetcdn\.com\/|ajax\.microsoft\.com\//', $src ) )
 				$src = remove_query_arg('ver',$src);
 			return $src;
 		}
