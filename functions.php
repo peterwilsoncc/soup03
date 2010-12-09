@@ -93,12 +93,12 @@ function soup_setupParentThemeClass(){
     
 		function defineParentURLs(){
 			$this->parent = array(
-				'url'	=> get_bloginfo('template_directory'),
-				'assets'=> get_bloginfo('template_directory') . '/assets/parent',
-				'css'	=> get_bloginfo('template_directory') . '/assets/parent/c',
-				'js'	=> get_bloginfo('template_directory') . '/assets/parent/j',
-				'img'	=> get_bloginfo('template_directory') . '/assets/parent/i',
-				'php'	=> get_bloginfo('template_directory') . '/assets/parent/p',
+				'url'	=> get_template_directory_uri(),
+				'assets'=> get_template_directory_uri() . '/assets/parent',
+				'css'	=> get_template_directory_uri() . '/assets/parent/c',
+				'js'	=> get_template_directory_uri() . '/assets/parent/j',
+				'img'	=> get_template_directory_uri() . '/assets/parent/i',
+				'php'	=> get_template_directory_uri() . '/assets/parent/p',
 				'phpPath' => TEMPLATEPATH . '/assets/parent/p'
 			);		
 		}
