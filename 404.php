@@ -17,7 +17,7 @@ the_post();
 
 			<p>Apologies, but we were unable to find what you were looking for. Perhaps  searching will help.</p>
 			
-			<form method="get" action="<?php bloginfo('home'); ?>" class="search-form search-404">
+			<form method="get" action="<?php bloginfo('url'); ?>" class="search-form search-404">
 				
 				<div>
 					<label for="s-404notfound" class="search-label">Search this Site</label>
