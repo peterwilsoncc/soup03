@@ -31,7 +31,7 @@
 <div id="pageWrap">
 
 <header>
-	<a href="<?php echo get_option('home'); ?>" id="siteDetails">
+	<a href="<?php echo home_url(); ?>" id="siteDetails">
 	<<?php echo $soup->siteNameTag; ?> id="siteName"><span></span><?php bloginfo('name'); ?></<?php echo $soup->siteNameTag; ?>>
 	<p id="siteDesc"><span></span><?php bloginfo('description'); ?></p>
 	</a>

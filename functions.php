@@ -967,7 +967,7 @@ function soup_setupParentThemeClass(){
 				$class = 'class="page_item page-item-home"';
 				if ( is_front_page() && !is_paged() )
 					$class = 'class="page_item page-item-home current_page_item"';
-				$menu .= '<li ' . $class . '><a href="' . get_option('home') . '">' . $r['link_before'] . $text . $r['link_after'] . '</a></li>';
+				$menu .= '<li ' . $class . '><a href="' . home_url() . '">' . $r['link_before'] . $text . $r['link_after'] . '</a></li>';
 				// If the front page is a page, add it to the exclude list
 				if (get_option('show_on_front') == 'page') {
 					if ( !empty( $list_args['exclude'] ) ) {
