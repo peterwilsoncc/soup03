@@ -105,13 +105,13 @@ function soup_setupParentThemeClass(){
 	
 		function defineChildUrls() {
 			$this->child = array(
-				'url'	=> get_bloginfo('stylesheet_directory'),
-				'assets'=> get_bloginfo('stylesheet_directory') . '/assets/child',
-				'css'	=> get_bloginfo('stylesheet_directory') . '/assets/child/c',
-				'js'	=> get_bloginfo('stylesheet_directory') . '/assets/child/j',
-				'img'	=> get_bloginfo('stylesheet_directory') . '/assets/child/i',
-				'php'	=> get_bloginfo('stylesheet_directory') . '/assets/child/p',
-				'phpPath' => STYLESHEETPATH . '/assets/parent/p'
+				'url'	=> get_stylesheet_directory_uri(),
+				'assets'=> get_stylesheet_directory_uri() . '/assets/child',
+				'css'	=> get_stylesheet_directory_uri() . '/assets/child/c',
+				'js'	=> get_stylesheet_directory_uri() . '/assets/child/j',
+				'img'	=> get_stylesheet_directory_uri() . '/assets/child/i',
+				'php'	=> get_stylesheet_directory_uri() . '/assets/child/p',
+				'phpPath' => STYLESHEETPATH . '/assets/child/p'
 			);		
 		}
 	
