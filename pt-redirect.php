@@ -19,9 +19,9 @@ elseif (($soup_redirectTo)) {
 		$soup_redirectTo = '/' . $soup_redirectTo;
 	}
 	
-	$blogurl_parsed = parse_url(get_bloginfo('url'));
+	$blogurl_parsed = parse_url(home_url());
 	$soup_redirectToPrefix = $blogurl_parsed['scheme'] . '://' . $blogurl_parsed['host'];
-	$soup_redirectTo = get_bloginfo('url') . $soup_redirectTo;
+	$soup_redirectTo = home_url() . $soup_redirectTo;
 	//echo "<!-- 2 $soup_redirectTo -->";
 	header( "HTTP/1.1 301 Moved Permanently" );
 	header( "Location: " . $soup_redirectTo );
