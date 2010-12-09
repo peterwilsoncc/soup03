@@ -190,7 +190,7 @@ STANDARD WORDPRESS STYLES
 
 
 /* galleries */
-dl.gallery-item {
+dl.gallery-item,dl.gallery-caption {
 	margin: 0;
 }
 
