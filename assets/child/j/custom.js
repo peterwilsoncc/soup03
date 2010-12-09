@@ -20,7 +20,7 @@ SOUPGIANT.client = function() {
 		$html = $('html');
 		SGb.nav('#navWrap,#footNavWrap');
 		SGb.skipLinks();
-		SGb.make$('body');
+		$('body');
 		$('#commentsList a.comment-reply-login, #respond p.must-log-in > a').click(function(e){SGb.displayLoginForm(e);});
 	});
 	
