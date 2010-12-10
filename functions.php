@@ -595,7 +595,10 @@ function soup_setupParentThemeClass(){
 				}
 
 				// Adds author class for the post author
-				$c[] = 'bxPA-' . sanitize_title_with_dashes(strtolower(get_the_author_login()));
+				// $c[] = 'bxPA-' . sanitize_title_with_dashes(strtolower(get_the_author_login()));
+				$c[] = 'bxPA-' . sanitize_title_with_dashes(strtolower(get_the_author_meta('login')));
+				
+				
 				rewind_posts();
 			}
 			// Author name classes for BODY on author archives
