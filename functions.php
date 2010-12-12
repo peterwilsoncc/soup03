@@ -148,7 +148,20 @@ function soup_setupParentThemeClass(){
 			$this->options['footerWidgets'] = true;
 			$this->options['contentBWidgets'] = true;
 			$this->options['contentCWidgets'] = true;
-			$this->options['handheldCssMedia'] = ''; //use to customise
+			$this->options['handheldCssMedia'] = ''; //use to customise @media query
+			
+			
+			$this->options['editorCSS'] = false; // if true, url is $this->child['css'] . '/all/editor-styles.css'
+			$this->options['editorStyleDropdown'] = false; //show style dropdown - will need to set up class dropdown
+			$this->options['editorEnglishClasses'] = false; //use english for style dropdown class names
+
+			/* ********************
+			 forge the header levels in the editor to keep inline with document layout
+			On pages, Header 1 is a h2 and so on
+			On pasts, Header 1 is a h4 and so on
+			also adds the class bxPage or bxPost as appropriate
+			********************* */
+			$this->options['editorFakeHeaderLevels'] = false; 
 		}
 		
 		function isSSL() {
@@ -190,6 +203,18 @@ function soup_setupParentThemeClass(){
 					remove_action('wp_head','feed_links_extra', 3);
 					remove_action('wp_head','feed_links', 2);
 				}
+			}
+			if ((function_exists('add_editor_style')) AND ($this->options['editorCSS'] == true)) {
+				add_editor_style("assets/child/c/all/editor-style.css");
+			}
+			if ($this->options['editorStyleDropdown'] == true) {
+				add_filter('mce_buttons_2', array(&$this, 'editorButtons'));
+				if ($this->options['editorEnglishClasses'] == true) {
+					add_filter('tiny_mce_before_init', array(&$this, 'editorEnglishClasses'));
+				}
+			}
+			if ($this->options['editorFakeHeaderLevels'] == true) {
+				add_filter('tiny_mce_before_init', array(&$this, 'editorSettings'));
 			}
 		}
 
@@ -408,6 +433,82 @@ function soup_setupParentThemeClass(){
 						
 			endif; //if (!is_admin()):
 		
+		}
+
+		function editorButtons($buttons){
+			array_unshift($buttons, 'styleselect');
+			return $buttons;
+		}
+
+		function editorEnglishClasses($settings) {
+			//Use english names for editor classes
+			// this should be overridden in the child theme
+			
+			$classes = array(
+				'English Name' => 'classname'
+			);
+			
+			
+			
+			
+			if ( !empty($settings['theme_advanced_styles']) ) {
+				$settings['theme_advanced_styles'] .= ';';
+			}
+			else {
+				$settings['theme_advanced_styles'] = '';
+			}
+				
+			$class_settings = '';
+			foreach ( $classes as $name => $value ) {
+				$class_settings .= "{$name}={$value};";
+			}
+
+			$settings['theme_advanced_styles'] .= trim($class_settings, '; ');
+			
+			return $settings;
+		}
+		
+		function editorSettings($settings) {			
+
+			if ( !empty($settings['theme_advanced_blockformats']) )
+				$settings['theme_advanced_blockformats'] .= ';';
+			else
+				$settings['theme_advanced_blockformats'] = '';
+			
+			if (get_post_type() == 'page') {
+				$formats = array(
+					'Paragraph' => 'p',
+					'Address' => 'address',
+					'Preformatted' => 'pre',
+					'Heading 1' => 'h2',
+					'Heading 2' => 'h3',
+					'Heading 3' => 'h4',
+					'Heading 4' => 'h5',
+					'Heading 5' => 'h6'
+				);
+				
+				$settings['body_class'] .= 'bxPage';
+			}
+			else {			
+				$formats = array(
+					'Paragraph' => 'p',
+					'Address' => 'address',
+					'Preformatted' => 'pre',
+					'Heading 1' => 'h4',
+					'Heading 2' => 'h5',
+					'Heading 3' => 'h6'
+				);
+				$settings['body_class'] .= 'bxPost';
+			}
+				
+			$format_settings = '';
+			foreach ( $formats as $name => $value ) {
+				$format_settings .= "{$name}={$value};";
+			}
+
+			$settings['theme_advanced_blockformats'] .= trim($format_settings, '; ');
+			
+			return $settings;
 		}
 	
 		function registerJS() {
