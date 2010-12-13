@@ -5,13 +5,13 @@ the_post();
 ?>
 
 <div id="content">
-	<article id="contentHeadA" <?php post_class(); ?>>
-		<header id="contentHead">
+	<div id="contentHeadA" <?php post_class('article5'); ?>><article>
+		<div id="contentHead"><header>
 			<<?php echo $soup->pageNameTag; ?> id="pageName" class="entry-title">
 				<?php the_title()?>
 			</<?php echo $soup->pageNameTag; ?>>
 			<p class="entry-meta">Posted on <time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
-		</header>			
+		</header></div>			
 		
 		<div id="contentA">
 			<?php 
@@ -23,7 +23,7 @@ the_post();
 			
 		</div>
 		<!-- //#contentA -->
-	</article>
+	</article></div>
 	<!-- //#contentHeadA -->
 <?php
 get_sidebar();

@@ -4,12 +4,12 @@ get_header();
 ?>
 
 <div id="content">
-	<section id="contentHeadA">
-		<header id="contentHead">
+	<div id="contentHeadA"><section>
+		<div id="contentHead"><header>
 			<<?php echo $soup->pageNameTag; ?> id="pageName">
 				Search Results for <span><?php the_search_query() ?></span>
 			</<?php echo $soup->pageNameTag; ?>>			
-		</header>
+		</header></div>
 		
 		<div id="contentA" class="hfeed">
 			<?php 
@@ -28,7 +28,7 @@ get_header();
 			
 		</div>
 		<!-- //#contentA -->
-	</section>
+	</section></div>
 	<!-- //#contentHeadA -->
 <?php
 get_sidebar();

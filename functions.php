@@ -1137,32 +1137,32 @@ function soup_setupParentThemeClass(){
 		function writePostHeader($post, $hx = 'h3') {
 			global $authordata;
 			?>
-			<header>
+			<div><header>
 				<<?php echo $hx;?> class="entry-title"><a href="<?php the_permalink();?>"><?php the_title()?></a></<?php echo $hx;?>>
 				<p class="entry-meta">Posted on <time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
-			</header>			
+			</header></div>
 			<?php
 		}
 		
 		function writePostContent($post) {
 			?>
-				<section class="entry-content">
+				<div class="entry-content"><section>
 					<?php the_content('Continue reading "'.the_title('', '', false).'" &raquo;'); ?>
-				</section>			
+				</section></div>
 			<?php
 		}
 		
 		function writePostExcerpt($post) {
 			?>
-				<section class="entry-summary">
+				<div class="entry-summary"><section>
 					<?php the_excerpt(); ?>
-				</section>			
+				</section></div>
 			<?php
 		}
 		
 		function writePostFooter($post) {
 			?>
-				<footer>
+				<div class="footer"><footer>
 					<p class="entry-meta">Posted in <span class="cat-links"><?php the_category(', '); ?></span> &bull; 
 					<?php edit_post_link('Edit', '', ' &bull; '); ?> 
 					<?php the_tags('<span class="tag-links">Tagged: ', ', ', '</span> &bull; '); ?>
@@ -1181,7 +1181,7 @@ function soup_setupParentThemeClass(){
 						?>
 					</span>
 					</p>
-				</footer>
+				</footer></div>
 			<?php
 		}
 
@@ -1189,13 +1189,13 @@ function soup_setupParentThemeClass(){
 		
 		function writeArchivePost($post, $hx = 'h2') {
 			?>
-			<article id="post-<?php the_ID() ?>" <?php post_class(); ?>>
+			<div id="post-<?php the_ID() ?>" <?php post_class('article5'); ?>><article>
 				<?php
 				$this->writePostHeader($post, $hx);
 				$this->writePostContent($post);
 				$this->writePostFooter($post);
 				?>
-			</article>
+			</article></div>
 			<!-- //#post-<?php the_ID() ?> -->
 			<?php			
 		}		

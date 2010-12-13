@@ -3,7 +3,7 @@ global $soup;
 if ( 'comments.php' == basename($_SERVER['SCRIPT_FILENAME']) )
 	die ( 'Please do not load this page directly. Thanks.' );
 ?>
-<section id="comments">
+<div id="comments"><section>
 	<?php
 	if ( post_password_required() ) : ?>
 		<div class="nopassword">This post is protected. Enter the password to view any comments.</div>
@@ -73,7 +73,7 @@ if ( 'comments.php' == basename($_SERVER['SCRIPT_FILENAME']) )
 	
 	
 	
-	<section>
+	<div><section>
 		<?php comment_form(array(
 			'fields' => apply_filters('comment_form_default_fields', array(
 				'author' => '<div class="comment-form-author inputPair">' . '<label for="author">' . __( 'Name' ) . '</label> ' 
@@ -105,7 +105,7 @@ if ( 'comments.php' == basename($_SERVER['SCRIPT_FILENAME']) )
 			$soup->loginForm();
 		endif;
 		?>
-	</section>
+	</section></div>
 	
 	
-</section>
+</section></div>

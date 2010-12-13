@@ -4,8 +4,8 @@ get_header();
 ?>
 
 <div id="content">
-	<section id="contentHeadA">
-		<header id="contentHead">
+	<div id="contentHeadA"><section>
+		<div id="contentHead"><header>
 			<<?php echo $soup->pageNameTag; ?> id="pageName">
 				<?php if ( is_day() ) : ?>
 							Daily Archives: <span><?php the_time(get_option('date_format')); ?></span>
@@ -27,7 +27,7 @@ get_header();
 							Blog Archives
 				<?php endif; ?>				
 			</<?php echo $soup->pageNameTag; ?>>			
-		</header>
+		</header></div>
 		
 		<div id="contentA" class="hfeed">
 			<?php 
@@ -46,7 +46,7 @@ get_header();
 			
 		</div>
 		<!-- //#contentA -->
-	</section>
+	</section></div>
 	<!-- //#contentHeadA -->
 <?php
 get_sidebar();

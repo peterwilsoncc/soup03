@@ -5,12 +5,12 @@ the_post();
 ?>
 
 <div id="content">
-	<article id="contentHeadA" <?php post_class(); ?>>
-		<header id="contentHead">
+	<div id="contentHeadA" <?php post_class('article5'); ?>><article>
+		<div id="contentHead"><header>
 			<<?php echo $soup->pageNameTag; ?> id="pageName" class="entry-title">
 				<?php the_title()?>
 			</<?php echo $soup->pageNameTag; ?>>
-		</header>			
+		</header></div>			
 		
 		<div id="contentA">
 			<?php 
@@ -25,7 +25,7 @@ the_post();
 			
 		</div>
 		<!-- //#contentA -->
-	</article>
+	</article></div>
 	<!-- //#contentHeadA -->
 <?php
 get_sidebar();

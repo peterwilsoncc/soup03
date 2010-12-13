@@ -5,12 +5,12 @@ the_post();
 ?>
 
 <div id="content">
-	<article id="contentHeadA" <?php post_class(); ?>>
-		<header id="contentHead">
+	<div id="contentHeadA" class="article5"><article>
+		<div id="contentHead"><header>
 			<<?php echo $soup->pageNameTag; ?> id="pageName" class="entry-title">
 				File Not Found
 			</<?php echo $soup->pageNameTag; ?>>
-		</header>			
+		</header></div>			
 		
 		<div id="contentA">
 
@@ -29,7 +29,7 @@ the_post();
 			
 		</div>
 		<!-- //#contentA -->
-	</article>
+	</article></div
 	<!-- //#contentHeadA -->
 <?php
 get_sidebar();

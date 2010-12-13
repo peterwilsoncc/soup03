@@ -55,7 +55,7 @@ SOUPGIANT.base = function() {
 	
 	function nav($nav, hoverClass, focusClass){
 		if ($nav == NUL) {
-			$nav = $('nav');
+			$nav = $('div.nav5');
 		}
 		$nav = $($nav);
 		if (hoverClass == NUL) {
