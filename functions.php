@@ -1139,7 +1139,7 @@ function soup_setupParentThemeClass(){
 			?>
 			<div><header>
 				<<?php echo $hx;?> class="entry-title"><a href="<?php the_permalink();?>"><?php the_title()?></a></<?php echo $hx;?>>
-				<p class="entry-meta">Posted on <time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
+				<p class="entry-meta">Posted on <span class="time pubdate"><time datetime="<?php the_time('c') ?>" pubdate class="entry-date"><?php the_time(get_option('date_format')); ?></time></span> by <span class="author vcard"><a class="url fn n" href="<?php echo get_author_posts_url( $authordata->ID, $authordata->user_nicename ); ?>" title="View all posts by <?php the_author(); ?>"><?php the_author(); ?></a></span></p>
 			</header></div>
 			<?php
 		}
