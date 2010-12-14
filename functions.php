@@ -152,8 +152,17 @@ function soup_setupParentThemeClass(){
 			
 			
 			$this->options['editorCSS'] = false; // if true, url is $this->child['css'] . '/all/editor-styles.css'
-			$this->options['editorStyleDropdown'] = false; //show style dropdown - will need to set up class dropdown
-			$this->options['editorEnglishClasses'] = false; //use english for style dropdown class names
+			
+			/* ********************************
+			If classes are to be added to the editor, add them to editorEnglishClasses as an array
+			otherwise leave the setting as false
+			EG:
+			$this->options['editorEnglishClasses'] = array(
+				'Leader Text' => 'leadertext',
+				'Highlighted' => 'hilight'
+			);
+			********************************* */
+			$this->options['editorEnglishClasses'] = false;
 
 			/* ********************
 			 forge the header levels in the editor to keep inline with document layout
@@ -207,11 +216,9 @@ function soup_setupParentThemeClass(){
 			if ((function_exists('add_editor_style')) AND ($this->options['editorCSS'] == true)) {
 				add_editor_style("assets/child/c/all/editor-style.css");
 			}
-			if ($this->options['editorStyleDropdown'] == true) {
+			if (is_array($this->options['editorEnglishClasses']) == true) {
 				add_filter('mce_buttons_2', array(&$this, 'editorButtons'));
-				if ($this->options['editorEnglishClasses'] == true) {
-					add_filter('tiny_mce_before_init', array(&$this, 'editorEnglishClasses'));
-				}
+				add_filter('tiny_mce_before_init', array(&$this, 'editorEnglishClasses'));
 			}
 			if ($this->options['editorFakeHeaderLevels'] == true) {
 				add_filter('tiny_mce_before_init', array(&$this, 'editorSettings'));
@@ -444,9 +451,7 @@ function soup_setupParentThemeClass(){
 			//Use english names for editor classes
 			// this should be overridden in the child theme
 			
-			$classes = array(
-				'English Name' => 'classname'
-			);
+			$classes = $this->options['editorEnglishClasses'];
 			
 			
 			
