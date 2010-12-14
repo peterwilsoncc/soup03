@@ -1272,7 +1272,7 @@ function soup_setupParentThemeClass(){
 						<cite class="fn"><?php comment_author_link(); ?></cite> <span class="says">says:</span>
 					</p>
 					<p class="comment-meta">
-						<a href="#comment-<?php comment_ID(); ?>"><?php comment_date(); ?> at <?php comment_time(); ?></a>
+						<a href="#comment-<?php comment_ID(); ?>" class="time"><time datetime="<?php comment_date('c') ?>" pubdate class="entry-date"><?php comment_date(); ?> at <?php comment_time(); ?></time></a>
 
 						<?php edit_comment_link('(Edit)', ' <span class="comment-edit-link">', '</span>' ); ?>
 					</p>
