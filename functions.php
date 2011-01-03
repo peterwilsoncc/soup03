@@ -585,6 +585,14 @@ function soup_setupParentThemeClass(){
 			);
 
 			wp_register_script(
+				'modernizr',
+				$this->parent['js'] . "/modernizr$psuffix.js",
+				null,
+				'1.6',
+				true
+			);
+
+			wp_register_script(
 				'custom',
 				$this->child['js'] . "/custom$csuffix.js",
 				$this->child['jsDependencies'],
