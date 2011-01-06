@@ -148,6 +148,7 @@ function soup_setupParentThemeClass(){
 			$this->options['footerWidgets'] = true;
 			$this->options['contentBWidgets'] = true;
 			$this->options['contentCWidgets'] = true;
+			$this->options['showWPAdminBar'] = false;
 			$this->options['handheldCssMedia'] = ''; //use to customise @media query
 			
 			
@@ -222,6 +223,10 @@ function soup_setupParentThemeClass(){
 			}
 			if ($this->options['editorFakeHeaderLevels'] == true) {
 				add_filter('tiny_mce_before_init', array(&$this, 'editorSettings'));
+			}
+			
+			if ($this->options['showWPAdminBar'] != true) {
+				remove_action( 'init', 'wp_admin_bar_init' );
 			}
 		}
 
