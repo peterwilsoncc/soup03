@@ -58,7 +58,7 @@ function soup_setupParentThemeClass(){
 		
 			add_action('wp_head', array(&$this, 'setHeaderTag'));
 			add_action('wp_head', array(&$this, 'favIcon'));
-			add_filter('body_class', array(&$this, 'bodyClass'),5, 2);
+			add_filter('body_class', array(&$this, 'bodyClass'),1, 2);
 			add_filter('post_class', array(&$this, 'postClass'),5, 3);
 		
 			add_action('wp_print_styles', array(&$this,'registerCSS'), 50);
@@ -671,14 +671,17 @@ function soup_setupParentThemeClass(){
 		function bodyClass($classes, $class = null) {
 			//set classes on <body> tag
 			// based on same function in Sandbox
-			global $wp_query, $current_user;
+			global $wp_query, $current_user, $wpdb;
 			//much of this function is sourced from the sandbox_body_class from the sandbox theme
 			
 			$c = array();
-			if (isset($class) && is_array($class))
-				$c[] = join(' ', $class);
+			$r = array(); //values that will be removed from the array
+			
+			$c = array_merge($classes);
+			
 			$c[] = 'nojs';
 			$c[] = 'nojswin';
+			
 			is_front_page()  ? $c[] = 'bxHome'       : null; // For the front page, if set
 			is_home()        ? $c[] = 'bxBlog bxList bxAllBlog'       : null; // For the blog posts page, if set
 			is_archive()     ? $c[] = 'bxArch bxList bxAllBlog'    : null;
@@ -688,14 +691,80 @@ function soup_setupParentThemeClass(){
 			is_paged()       ? $c[] = 'bxPaged'      : null;
 			is_attachment()  ? $c[] = 'bxAtt' : null;
 			is_404()         ? $c[] = 'bx404'     : null; // CSS does not allow a digit as first character
-			// Special classes for BODY element when a single post
-			if ( is_single() ) {
-				$postSlug = $wp_query->post->post_name;
-				$postID = $wp_query->post->ID;
-				the_post();
+			
+			
+			if (is_front_page()) {
+				$c[] = 'bxHome';
+				
+				$r[] = 'home';
+			}
+			if (is_home()) {
+				$c[] = 'bxBlog';
+				$c[] = 'bxList';
+				$c[] = 'bxAllBlog';
+				
+				$r[] = 'blog';
+			}
+			if (is_archive()) {
+				$c[] = 'bxArch';
+				$c[] = 'bxList';
+				$c[] = 'bxAllBlog';
+				
+				$r[] = 'archive';
+			}
+			if (is_date()) {
+				$c[] = 'bxDate';
+				
+				$r[] = 'date';
+			}
+			if ( is_search() ) {
+				$c[] = 'bxSearch';
+				
+				$r[] = 'search';
+			}
+			if ( is_paged() ) {
+				$c[] = 'bxPaged';
+				
+				$r[] = 'paged';
+			}
+			
+			if (is_singular()) {
+				$c[] = 'bxSngl';
+			}
+			
+			if ( is_attachment() ) {
+				$c = 'bxAtt';
+				
+				$r[] = 'attachment';
+			}
+			
+			if ( is_404() ) {
+				$c[] = 'bx404';
+				
+				$r[] = 'error404';
+			}
+			
 
-				// Adds 'post' class and class with the post ID
-				$c[] = 'bxAllBlog bxPost bxP-' . $postSlug . ' bxP-id' . $postID;
+
+
+			if ( is_single() ) {
+				$post_id = $wp_query->get_queried_object_id();
+				$post = $wp_query->get_queried_object();
+				$postSlug = $wp_query->post->post_name;
+				
+				
+				$c[] = 'bxAllBlog';
+				
+				$c[] = 'bxPost';
+				$r[] = 'single';
+				
+				$c[] = 'bxPTy-' . sanitize_html_class($post->post_type, $post_id);
+				$r[] = 'single-' . sanitize_html_class($post->post_type, $post_id);
+				
+				$c[] = 'bxP-' . $postSlug;
+				$c[] = 'bxP-id' . $post_id;
+				$r[] = 'postid-' . $post_id;
+
 				// Adds category classes for each category on single posts
 				if ( $cats = get_the_category() )
 					foreach ( $cats as $cat )
@@ -706,39 +775,76 @@ function soup_setupParentThemeClass(){
 					foreach ( $tags as $tag )
 						$c[] = 'bxPTag-' . $tag->slug;
 
-				// Adds MIME-specific classes for attachments
-				if ( is_attachment() ) {
-					$mime_type = get_post_mime_type();
-					$mime_prefix = array( 'application/', 'image/', 'text/', 'audio/', 'video/', 'music/' );
-						$c[] = 'bxAtt-' . $postSlug . ' bxAtt-' . str_replace( $mime_prefix, "", "$mime_type" );
+
+				if (function_exists('get_post_format')) {
+					$post_format = get_post_format( $post->ID );
+
+					if ( $post_format && !is_wp_error($post_format) ) {
+						$c[] = 'bxPF-' . sanitize_html_class( $post_format );
+						$r[] = 'single-format-' . sanitize_html_class( $post_format );
+					}
+					else {
+						$c[] = 'bxPF-standard';
+						$r[] = 'single-format-standard';
+					}
 				}
 
-				// Adds author class for the post author
-				// $c[] = 'bxPA-' . sanitize_title_with_dashes(strtolower(get_the_author_login()));
-				$c[] = 'bxPA-' . sanitize_title_with_dashes(strtolower(get_the_author_meta('login')));
-				
-				
-				rewind_posts();
-			}
+				if ( is_attachment() ) {
+					
+					
+					$mime_type = get_post_mime_type($post_id);
+					$mime_prefix = array( 'application/', 'image/', 'text/', 'audio/', 'video/', 'music/' );
+					$c[] = 'bxAtt';
+					$c[] = 'bxAtt-' . $postSlug;
+					$c[] = 'bxAtt-' . str_replace( $mime_prefix, "", "$mime_type" );
+					
+					$r[] = 'attachmentid-' . $post_id;
+					$r[] = 'attachment-' . str_replace( $mime_prefix, '', $mime_type );
+				}
+			}	
 			// Author name classes for BODY on author archives
 			elseif ( is_author() ) {
 				$author = $wp_query->get_queried_object();
 				$c[] = 'bxAuthor';
 				$c[] = 'bxA-' . $author->user_nicename;
+				
+				$r[] = 'author';
+				$r[] = 'author-' . sanitize_html_class( $author->user_nicename , $author->ID );
 			}
-
 			// Category name classes for BODY on category archvies
 			elseif ( is_category() ) {
 				$cat = $wp_query->get_queried_object();
 				$c[] = 'bxCat';
 				$c[] = 'bxC-' . $cat->slug;
-			}
 
+				$r[] = 'category';
+				$r[] = 'category-' . sanitize_html_class( $cat->slug, $cat->cat_ID );
+			}
 			// Tag name classes for BODY on tag archives
 			elseif ( is_tag() ) {
 				$tags = $wp_query->get_queried_object();
 				$c[] = 'bxTag';
 				$c[] = 'bxTag-' . $tags->slug;
+
+
+				$r[] = 'tag';
+				$r[] = 'tag-' . sanitize_html_class( $tags->slug, $tags->term_id );
+
+			}
+
+			// Tag name classes for BODY on taxonomy archives
+			elseif (function_exists('is_tax') AND is_tax() ) {			
+				
+				$term = $wp_query->get_queried_object();
+				
+				$c[] = 'bxTax-' . sanitize_html_class( $term->taxonomy );
+				$c[] = 'bxTerm-' . sanitize_html_class( $term->slug, $term->term_id );
+				$c[] = 'bxTerm-' . $term->term_id;
+				
+				
+				$r[] = 'tax-' . sanitize_html_class( $term->taxonomy );
+				$r[] = 'term-' . sanitize_html_class( $term->slug, $term->term_id );
+				$r[] = 'term-' . $term->term_id;
 			}
 
 			// Page author for BODY on 'pages'
@@ -746,40 +852,65 @@ function soup_setupParentThemeClass(){
 				$pageID = $wp_query->post->ID;
 				$pageSlug = $wp_query->post->post_name;
 				$page_children = wp_list_pages("child_of=$pageID&echo=0");
-				the_post();
-				$c[] = 'bxPage bxPg-' . $pageSlug;
-				$c[] = 'bxPgA-' . sanitize_title_with_dashes(strtolower(get_the_author('login')));
-				// Checks to see if the page has children and/or is a child page; props to Adam
-				if ( $page_children )
-					$c[] = 'bxPgTree-' . $pageID;
-				if ( $wp_query->post->post_parent )
-					$c[] = 'bxPgChild bxPgTree-' . $wp_query->post->post_parent;
-				if ( is_page_template() ) // Hat tip to Ian, themeshaper.com
-					$c[] = 'bxPgTemplate bxPgT-' . str_replace( '.php', '', get_post_meta( $pageID, '_wp_page_template', true ) );
-				rewind_posts();
-			}
+				$post = get_page($pageID);
+				$c[] = 'bxPage';
+				$r[] = 'page';
+				$r[] = 'page-id-' . $pageID;
 
-			// Search classes for results or no results
-			elseif ( is_search() ) {
-				the_post();
-				if ( have_posts() ) {
-					$c[] = 'bxSearchResults';
-				} else {
-					$c[] = 'bxSearchNil';
+				$c[] = 'bxPg-' . $pageSlug;
+				$c[] = 'bxPgA-' . sanitize_title_with_dashes(strtolower(get_the_author('login')));
+
+
+
+				if ( $wpdb->get_var( $wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE post_parent = %d AND post_type = 'page' AND post_status = 'publish' LIMIT 1", $page_id) ) ) {
+					$c[] = 'bxPgTree-' . $pageID;
+					$r[] = 'page-parent';
 				}
-				rewind_posts();
+
+				if ( $post->post_parent ) {
+					$r[] = 'page-child';
+					$r[] = 'parent-pageid-' . $post->post_parent;
+					
+					$c[] = 'bxPgChild';
+					$c[] = 'bxPgTree-' . $post->post_parent;
+					
+				}
+				if ( is_page_template() ) {
+					$c[] = 'bxPgTemplate';
+					$c[] = 'bxPgT-' . str_replace( '.php', '', get_post_meta( $pageID, '_wp_page_template', true ) );
+					
+					$r[] = 'page-template';
+					$r[] = 'page-template-' . sanitize_html_class( str_replace( '.', '-', get_post_meta( $page_id, '_wp_page_template', true ) ), '' );
+				}
+				
+				
 			}
+			elseif ( is_search() ) {
+				if ( !empty( $wp_query->posts ) ) {
+					$c[] = 'bxSearchResults';
+					$r[] = 'search-results';
+				}
+				else {
+					$c[] = 'bxSearchNil';
+					$r[] = 'search-no-results';
+				}
+			}			
 
 			// For when a visitor is logged in while browsing
-			if ( $current_user->ID )
+			if ( $current_user->ID ) {
+				$r[] = 'logged-in';
 				$c[] = 'bxLoggedIn';
+			}
+			
+			//remove the default classes that have been replaced with the soupgiant equivs.
+			$soupClasses = array_diff($c, $r);
 
 
 			// Separates classes with a single space, collates classes for BODY
 			//$c = join( ' ', apply_filters( 'body_class',  $c ) ); // Available filter: body_class
 
 			// And tada!
-			return $c;	
+			return $soupClasses;	
 		}
 
 		function postClass($classes, $class = null, $post_ID = null) {
@@ -787,40 +918,38 @@ function soup_setupParentThemeClass(){
 			// sourced from the sandbox theme
 			
 			if (isset($post_ID)) {
-				$post = get_post($post_id);
+				$post = get_post($post_ID);
 			}
 			else {
 				global $post;
 			}
+			
+			$r = array();
+			$c = array_merge($classes);
 
 			// hentry for hAtom compliace, gets 'alt' for every other post DIV, describes the post type and p[n]
-			$c = array( 'hentry', "p$this->postAlt", $post->post_type, $post->post_status );
-
-			if ( is_sticky($post->ID) && is_home() && !is_paged() )
-				$c[] = 'sticky';
-
-
-			if (!empty($class)) {
-				$c[] = join(' ', $class);
-			}
-
-			// Post ID
-			$c[] = 'post-' . $post->post_name;
+			$c[] = "p$this->postAlt";
+			$c[] = $post->post_type;
+			$c[] = $post->post_status;
 
 			// Author for the post queried
 			$c[] = 'author-' . sanitize_title_with_dashes(strtolower(get_the_author('login')));
 
 			// Category for the post queried
-			foreach ( (array) get_the_category() as $cat )
-				$c[] = 'cat-' . $cat->slug;
+			foreach ( (array) get_the_category() as $cat ) {
+				if ( empty($cat->slug ) ) {
+					continue;
+				}
+				$c[] = 'cat-' . sanitize_html_class($cat->slug, $cat->cat_ID);
+				$r[] = 'category-' . sanitize_html_class($cat->slug, $cat->cat_ID);
+				
+			}
 
 			// Tags for the post queried; if not tagged, use .untagged
 			if ( get_the_tags() == null ) {
 				$c[] = 'untagged';
 			} else {
 				$c[] = 'tagged';
-				foreach ( (array) get_the_tags() as $tag )
-					$c[] = 'tag-' . $tag->slug;
 			}
 
 			// For password-protected posts
@@ -834,8 +963,8 @@ function soup_setupParentThemeClass(){
 			if ( ++$this->postAlt % 2 )
 				$c[] = 'alt';
 
-			// Separates classes with a single space, collates classes for post DIV
-			return $c;
+			$soupClasses = array_diff($c, $r);
+			return $soupClasses;	
 		}
 	
 		function favIcon(){
