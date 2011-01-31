@@ -226,8 +226,13 @@ function soup_setupParentThemeClass(){
 			}
 			
 			if ($this->options['showWPAdminBar'] != true) {
-				remove_action( 'init', 'wp_admin_bar_init' );
-			}
+				//credit due: http://yoast.com/disable-wp-admin-bar/
+				
+				/* Disable the Admin Bar. */
+				add_filter( 'show_admin_bar', '__return_false' );
+
+				/* Remove the Admin Bar preference in user profile */
+				remove_action( 'personal_options', '_admin_bar_preferences' );			}
 		}
 
 		//register styles
