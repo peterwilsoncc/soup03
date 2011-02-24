@@ -371,7 +371,7 @@ function soup_setupParentThemeClass(){
 			wp_register_style(
 				'soup-all-media',
 				$this->child['css'] . "/all-media/all-media$csuffix.css",
-				array('soup-all'),
+				null,
 				$this->child['cssVer'],
 				'print'
 			);
