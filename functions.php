@@ -373,7 +373,7 @@ function soup_setupParentThemeClass(){
 				$this->child['css'] . "/all-media/all-media$csuffix.css",
 				null,
 				$this->child['cssVer'],
-				'print'
+				'all'
 			);
 
 			wp_register_style(
